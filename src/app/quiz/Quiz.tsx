@@ -1,33 +1,53 @@
-// app/components/Quiz.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/app/context/QuizContext';
+import BackgroundImage from '../assets/BG yellow.webp';
+import Logo from '../components/Logo';
 
-const QuizContainer = styled.div`
+const QuizWrapper = styled.div`
+  position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, #fff4e6 0%, #ffffff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  
+  &:before {
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('${BackgroundImage.src}');
+    background-size: cover;
+    opacity: 0.2;
+    z-index: -1;
+    border-radius: 48px;
+    
+  }
 `;
 
-const QuizCard = styled.div`
-  background: transparent;
+const QuizContainer = styled.div`  
   width: 100%;
-  max-width: 800px;
+  max-width: 1220px;
   text-align: center;
+`;
+
+const QuizHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
 `;
 
 const StepIndicator = styled.div`
   font-size: 16px;
   color: #1a237e;
-  font-weight: 600;
-  margin-bottom: 40px;
-  text-align: right;
+  font-weight: 600;  
 `;
 
 const StepContent = styled.div`
@@ -43,7 +63,6 @@ const StepTitle = styled.h2`
   color: #1a237e;
   line-height: 1.2;
   margin: 0;
-  max-width: 600px;
   
   @media (max-width: 768px) {
     font-size: 24px;
@@ -234,6 +253,14 @@ const BackButton = styled.button`
   }
 `;
 
+const HiddenSubmit = styled.input`
+  display: none;
+`;
+
+const ErrorMessage = styled(StepText)`
+  color: #E32855;
+`;
+
 const Quiz = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const router = useRouter();
@@ -250,15 +277,39 @@ const Quiz = () => {
     setDesiredWeight,
     setEmail
   } = useQuiz();
+  const hiddenSubmitRef = useRef<HTMLInputElement>(null);
+  const [showError, setShowError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+
 
   const totalSteps = 4;
+
+  const submitResults = async () => {
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        body: JSON.stringify({
+          mood: 'just wow 1',
+          symptoms: 'idk',
+        }),
+      });
+      const result = await response.json();
+      if (!result.ok) {
+        throw new Error(result.errorMessage);
+      }
+      router.push('/results');
+    } catch (error) {
+      const err = error as Error;
+      setShowError(true);
+      setErrorText(err.message || 'Something went wrong. Please try again.');
+    }
+  };
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Quiz completed, navigate to results
-      router.push('/results');
+      hiddenSubmitRef.current?.click();
     }
   };
 
@@ -292,188 +343,196 @@ const Quiz = () => {
   ];
 
   return (
-    <QuizContainer>
-      <QuizCard>
-        <StepIndicator>
-          {currentStep} of 3
-        </StepIndicator>
+    <QuizWrapper>
+      <QuizContainer>
+        <QuizHeader>
+          <Logo />
+          {currentStep !== 4 && (
+            <StepIndicator>
+              {currentStep} of 3
+            </StepIndicator>
+          )}
+        </QuizHeader>
+        <StepContent>
+          {currentStep === 1 && (
+            <>
+              <StepTitle>How are you feeling today? Let us know where you&apos;re at!</StepTitle>
+              <OptionsContainer>
+                {moodOptions.map((option) => (
+                  <MoodOption
+                    key={option.value}
+                    onClick={() => handleMoodSelect(option.value as any)}
+                    $selected={quiz.mood === option.value}
+                  >
+                    <span>{option.label}</span>
+                    <Arrow>→</Arrow>
+                  </MoodOption>
+                ))}
+              </OptionsContainer>            
+            </>
+          )}
 
-        {currentStep === 1 && (
-          <StepContent>
-            <StepTitle>How are you feeling today? Let us know where you're at!</StepTitle>
-            <OptionsContainer>
-              {moodOptions.map((option) => (
-                <MoodOption
-                  key={option.value}
-                  onClick={() => handleMoodSelect(option.value as any)}
-                  $selected={quiz.mood === option.value}
+          {currentStep === 2 && (
+            <>
+              <StepTitle>Do you relate to any of these symptoms?</StepTitle>
+              <SymptomsContainer>
+                {symptoms.map((symptom) => (
+                  <SymptomOption
+                    key={symptom}
+                    $selected={quiz.symptoms.includes(symptom)}
+                    onClick={() => toggleSymptom(symptom)}
+                  >
+                    <Checkbox $checked={quiz.symptoms.includes(symptom)}>
+                      {quiz.symptoms.includes(symptom) && '✓'}
+                    </Checkbox>
+                    <span>{symptom}</span>
+                  </SymptomOption>
+                ))}
+              </SymptomsContainer>
+            </>
+          )}
+
+          {currentStep === 3 && (
+            <>
+              <StepTitle>To receive your summary, please enter your measurements.</StepTitle>
+              
+              <TabContainer>
+                <Tab 
+                  $active={quiz.measurementUnit === 'imperial'}
+                  onClick={() => setMeasurementUnit('imperial')}
                 >
-                  <span>{option.label}</span>
-                  <Arrow>→</Arrow>
-                </MoodOption>
-              ))}
-            </OptionsContainer>
-            {currentStep > 1 && (
-              <BackButton onClick={prevStep}>
-                ← GO BACK
-              </BackButton>
-            )}
-          </StepContent>
-        )}
-
-        {currentStep === 2 && (
-          <StepContent>
-            <StepTitle>Do you relate to any of these symptoms?</StepTitle>
-            <SymptomsContainer>
-              {symptoms.map((symptom) => (
-                <SymptomOption
-                  key={symptom}
-                  $selected={quiz.symptoms.includes(symptom)}
-                  onClick={() => toggleSymptom(symptom)}
+                  IMPERIAL
+                </Tab>
+                <Tab 
+                  $active={quiz.measurementUnit === 'metric'}
+                  onClick={() => setMeasurementUnit('metric')}
                 >
-                  <Checkbox $checked={quiz.symptoms.includes(symptom)}>
-                    {quiz.symptoms.includes(symptom) && '✓'}
-                  </Checkbox>
-                  <span>{symptom}</span>
-                </SymptomOption>
-              ))}
-            </SymptomsContainer>
-            <ContinueButton onClick={nextStep}>
-              CONTINUE
-            </ContinueButton>
-            <BackButton onClick={prevStep}>
-              ← GO BACK
-            </BackButton>
-          </StepContent>
-        )}
+                  METRIC
+                </Tab>
+              </TabContainer>
 
-        {currentStep === 3 && (
-          <StepContent>
-            <StepTitle>To receive your summary, please enter your measurements.</StepTitle>
-            
-            <TabContainer>
-              <Tab 
-                $active={quiz.measurementUnit === 'imperial'}
-                onClick={() => setMeasurementUnit('imperial')}
-              >
-                IMPERIAL
-              </Tab>
-              <Tab 
-                $active={quiz.measurementUnit === 'metric'}
-                onClick={() => setMeasurementUnit('metric')}
-              >
-                METRIC
-              </Tab>
-            </TabContainer>
-
-            <FormContainer>
-              <FormRow>
-                <FormField>
-                  <Input 
-                    type="number" 
-                    placeholder="Age"
-                    value={quiz.age || ''}
-                    onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                  <Unit>years</Unit>
-                </FormField>
-              </FormRow>
-
-              {quiz.measurementUnit === 'imperial' ? (
+              <FormContainer>
                 <FormRow>
                   <FormField>
                     <Input 
                       type="number" 
-                      placeholder="Height"
-                      value={quiz.heightFeet || ''}
-                      onChange={(e) => setHeightFeet(e.target.value ? parseInt(e.target.value) : null)}
+                      placeholder="Age"
+                      value={quiz.age || ''}
+                      onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : null)}
                     />
-                    <Unit>ft</Unit>
-                  </FormField>
-                  <FormField>
-                    <Input 
-                      type="number" 
-                      placeholder="In"
-                      value={quiz.heightInches || ''}
-                      onChange={(e) => setHeightInches(e.target.value ? parseInt(e.target.value) : null)}
-                    />
-                    <Unit>in</Unit>
+                    <Unit>years</Unit>
                   </FormField>
                 </FormRow>
-              ) : (
+
+                {quiz.measurementUnit === 'imperial' ? (
+                  <FormRow>
+                    <FormField>
+                      <Input 
+                        type="number" 
+                        placeholder="Height"
+                        value={quiz.heightFeet || ''}
+                        onChange={(e) => setHeightFeet(e.target.value ? parseInt(e.target.value) : null)}
+                      />
+                      <Unit>ft</Unit>
+                    </FormField>
+                    <FormField>
+                      <Input 
+                        type="number" 
+                        placeholder="In"
+                        value={quiz.heightInches || ''}
+                        onChange={(e) => setHeightInches(e.target.value ? parseInt(e.target.value) : null)}
+                      />
+                      <Unit>in</Unit>
+                    </FormField>
+                  </FormRow>
+                ) : (
+                  <FormRow>
+                    <FormField>
+                      <Input 
+                        type="number" 
+                        placeholder="Height"
+                        value={quiz.heightCm || ''}
+                        onChange={(e) => setHeightCm(e.target.value ? parseInt(e.target.value) : null)}
+                      />
+                      <Unit>cm</Unit>
+                    </FormField>
+                  </FormRow>
+                )}
+
                 <FormRow>
                   <FormField>
                     <Input 
                       type="number" 
-                      placeholder="Height"
-                      value={quiz.heightCm || ''}
-                      onChange={(e) => setHeightCm(e.target.value ? parseInt(e.target.value) : null)}
+                      placeholder="Weight"
+                      value={quiz.weight || ''}
+                      onChange={(e) => setWeight(e.target.value ? parseInt(e.target.value) : null)}
                     />
-                    <Unit>cm</Unit>
+                    <Unit>{quiz.measurementUnit === 'imperial' ? 'lb' : 'kg'}</Unit>
                   </FormField>
                 </FormRow>
-              )}
 
-              <FormRow>
-                <FormField>
-                  <Input 
-                    type="number" 
-                    placeholder="Weight"
-                    value={quiz.weight || ''}
-                    onChange={(e) => setWeight(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                  <Unit>{quiz.measurementUnit === 'imperial' ? 'lb' : 'kg'}</Unit>
-                </FormField>
-              </FormRow>
+                <FormRow>
+                  <FormField>
+                    <Input 
+                      type="number" 
+                      placeholder="Desired weight"
+                      value={quiz.desiredWeight || ''}
+                      onChange={(e) => setDesiredWeight(e.target.value ? parseInt(e.target.value) : null)}
+                    />
+                    <Unit>{quiz.measurementUnit === 'imperial' ? 'lb' : 'kg'}</Unit>
+                  </FormField>
+                </FormRow>
+              </FormContainer>
+            </>
+          )}
 
-              <FormRow>
-                <FormField>
-                  <Input 
-                    type="number" 
-                    placeholder="Desired weight"
-                    value={quiz.desiredWeight || ''}
-                    onChange={(e) => setDesiredWeight(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                  <Unit>{quiz.measurementUnit === 'imperial' ? 'lb' : 'kg'}</Unit>
-                </FormField>
-              </FormRow>
-            </FormContainer>
+          {currentStep === 4 && (
+            <StepContent>
+              <StepTitle>Enter your e-mail</StepTitle>
+              <FormContainer>
+                <FormRow>
+                  <FormField>
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      submitResults();
+                    }}>
+                      <Input 
+                        type="email"
+                        id="email_input"
+                        required
+                        pattern="^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$"
+                        placeholder="email@email.com"
+                        value={quiz.email || ''}
+                        onChange={(e) => setEmail(e.target.value || null)}
+                      />
+                      <HiddenSubmit type="submit" ref={hiddenSubmitRef} />
+                    </form>
+                  </FormField>
+                </FormRow>
+                <StepText>We do respect your privacy.</StepText>
+                {showError && (
+                  <ErrorMessage>
+                    {errorText}
+                  </ErrorMessage>
+                )}
+              </FormContainer>            
+            </StepContent>
+          )}
 
+          {currentStep !== 1 && (
             <ContinueButton onClick={nextStep}>
               CONTINUE
             </ContinueButton>
-            <BackButton onClick={prevStep}>
-              ← GO BACK
-            </BackButton>
-          </StepContent>
-        )}
+          )}
 
-        {currentStep === 4 && (
-          <StepContent>
-            <StepTitle>Enter your email</StepTitle>
-            <FormContainer>
-              <FormRow>
-                <FormField>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email"
-                    value={quiz.email || ''}
-                    onChange={(e) => setEmail(e.target.value || null)}
-                  />
-                </FormField>
-              </FormRow>
-              <StepText>We do respect your privacy.</StepText>
-            </FormContainer>
-            <ContinueButton onClick={nextStep}>
-              CONTINUE
-            </ContinueButton>
+          {currentStep !== 4 && (
             <BackButton onClick={prevStep}>
               ← GO BACK
             </BackButton>
-          </StepContent>
-        )}
-      </QuizCard>
-    </QuizContainer>
+          )}
+        </StepContent>
+      </QuizContainer>
+    </QuizWrapper>
   );
 };
 

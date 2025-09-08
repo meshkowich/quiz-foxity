@@ -5,8 +5,8 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/app/context/QuizContext';
-import Image  from 'next/image';
-import SuniflowLogo from '../assets/suniflow_logo.webp';
+import Logo from '../components/Logo';
+
 
 const StaticSVGChart = styled.svg`
   width: 100%;
@@ -42,15 +42,6 @@ const HeaderSection = styled.div`
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-`;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 50px;
-  max-width: 175px;
-  margin: 0;
 `;
 
 const SeeProductButton = styled.button`
@@ -311,13 +302,7 @@ const Results = () => {
   return (
     <ResultsContainer>      
       <HeaderSection>
-        <LogoContainer>
-          <Image
-            src={SuniflowLogo}
-            alt="Suniflow Logo"
-            style={{ maxWidth: '100%', height: 'auto' }}
-          />
-        </LogoContainer>
+        <Logo />
         <SeeProductButton onClick={() => router.push('/')}>
           SEE THE PRODUCT
         </SeeProductButton>

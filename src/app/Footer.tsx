@@ -4,6 +4,7 @@ import styled from "styled-components";
 import BackgroundImg from "./assets/BG blue.webp";
 import Image  from 'next/image';
 import SuniflowLogoLight from './assets/suniflow_logo_light.webp';
+import { usePathname } from "next/navigation";
 
 
 
@@ -80,29 +81,34 @@ const Copyright = styled.div`
   color: rgba(255,255,255,0.7);
 `;
 
-const Footer = () => (
-  <StyledFooter>
-    <FooterContent>
-      <FooterLogo>
-        <Image
-          src={SuniflowLogoLight}
-          alt="Suniflow Logo"
-          style={{ maxWidth: '100%', height: 'auto' }} 
-        />
-      </FooterLogo>
-      <FooterNav>
-        <FooterLink>FAQ</FooterLink>
-        <FooterLink>Privacy Policy</FooterLink>
-        <FooterLink>Terms of Services</FooterLink>
-        <FooterLink>Contact Us</FooterLink>
-      </FooterNav>
-      <SocialIcons>
-        <SocialIcon>📘</SocialIcon>
-        <SocialIcon>📷</SocialIcon>
-      </SocialIcons>
-      <Copyright>Suniflow 2023 © All rights reserved</Copyright>
-    </FooterContent>
-  </StyledFooter>
-);
+const Footer = () => {  
+  const pathname = usePathname();
+  const isQuizFlow = pathname.startsWith('/quiz');
+  if (isQuizFlow) return null;
+  return (
+    <StyledFooter>
+      <FooterContent>
+        <FooterLogo>
+          <Image
+            src={SuniflowLogoLight}
+            alt="Suniflow Logo"
+            style={{ maxWidth: '100%', height: 'auto' }} 
+          />
+        </FooterLogo>
+        <FooterNav>
+          <FooterLink>FAQ</FooterLink>
+          <FooterLink>Privacy Policy</FooterLink>
+          <FooterLink>Terms of Services</FooterLink>
+          <FooterLink>Contact Us</FooterLink>
+        </FooterNav>
+        <SocialIcons>
+          <SocialIcon>📘</SocialIcon>
+          <SocialIcon>📷</SocialIcon>
+        </SocialIcons>
+        <Copyright>Suniflow 2023 © All rights reserved</Copyright>
+      </FooterContent>
+    </StyledFooter>
+  );
+};
 
 export default Footer;

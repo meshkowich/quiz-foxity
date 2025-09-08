@@ -3,6 +3,9 @@
 import styled from 'styled-components';
 import Image  from 'next/image';
 import HeroImage from './assets/short-hero-collage-desktop@2x.webp';
+import GlutenFree from './assets/80 Gluten free.png';
+import Vegan from './assets/80 Vegan.png';
+import NonGMO from './assets/80 Non GMO.png';
 import SuniflowLogo from './assets/suniflow_logo.webp';
 import BackgroundImage from './assets/BG yellow.webp';
 import Button from './components/Button';
@@ -228,10 +231,8 @@ const Feature = styled.div`
 `;
 
 const FeatureIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  border: 2px solid #ddd;
-  border-radius: 50%;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,7 +301,7 @@ const Landing = () => {
           <ImageContainer>
             <Image
               src={HeroImage}
-              alt="Customer testimonial"
+              alt="Happy customers"
               style={{ position: 'absolute', maxWidth: '100%', height: 'auto', top: 0 }} 
             />
           </ImageContainer>
@@ -310,15 +311,33 @@ const Landing = () => {
 
       <Features>
         <Feature>
-          <FeatureIcon>🌾</FeatureIcon>
+          <FeatureIcon>
+            <Image
+              src={GlutenFree}
+              alt="Gluten-free"
+              style={{ maxWidth: '100%', height: 'auto' }} 
+            />
+          </FeatureIcon>
           <FeatureText>Gluten-free</FeatureText>
         </Feature>
         <Feature>
-          <FeatureIcon>🌱</FeatureIcon>
+          <FeatureIcon>
+            <Image
+              src={Vegan}
+              alt="Vegan"
+              style={{ maxWidth: '100%', height: 'auto' }} 
+            />
+          </FeatureIcon>
           <FeatureText>Vegan</FeatureText>
         </Feature>
         <Feature>
-          <FeatureIcon>🧬</FeatureIcon>
+          <FeatureIcon>
+            <Image
+              src={NonGMO}
+              alt="Non-GMO"
+              style={{ maxWidth: '100%', height: 'auto' }} 
+            />
+          </FeatureIcon>
           <FeatureText>Non-GMO</FeatureText>
         </Feature>
       </Features>
