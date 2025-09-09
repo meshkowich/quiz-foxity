@@ -10,7 +10,7 @@ export const handlers = [
   // POST example (echo back body)
   http.post('/api/submit', async ({ request }) => {
     const body = await request.json();
-    const success = Math.random() > 0.5; // 50% chance of success
+    const success = Math.random() > 0.2; // 80% chance of success
     if (success) {
       return HttpResponse.json({ ok: true, received: body }, { status: 200 });
     }

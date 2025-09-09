@@ -2,22 +2,23 @@
 
 import styled from 'styled-components';
 import Image  from 'next/image';
-import HeroImage from './assets/short-hero-collage-desktop@2x.webp';
+import HeroImageDesktop from './assets/short-hero-collage-desktop@2x.webp';
+import HeroImage from './assets/short-hero-collage-mobile@2x.webp';
 import GlutenFree from './assets/80 Gluten free.png';
 import Vegan from './assets/80 Vegan.png';
 import NonGMO from './assets/80 Non GMO.png';
-import SuniflowLogo from './assets/suniflow_logo.webp';
 import BackgroundImage from './assets/BG yellow.webp';
 import Button from './components/Button';
 import UpTo from './components/UpTo';
 import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/app/context/QuizContext';
+import Logo from './components/Logo';
 
 const MainContentBack = styled.main`
   max-width: 1400px;
   margin: 20px auto 0 auto;
-  border-radius: 48px;
-  max-height: 800px;
+  border-radius: 48px;  
+  padding: 0 10px;
 `;
 
 const MainContent = styled.main`
@@ -46,8 +47,7 @@ const MainContent = styled.main`
     background-size: cover;
     opacity: 0.2;
     z-index: -1;
-    border-radius: 48px;
-    
+    border-radius: 48px;    
   }
 `;
 
@@ -59,23 +59,67 @@ const ContentSection = styled.div`
   }
 `;
 
+const ImageContainerDesktop = styled.div`
+  display: none;
+  position: relative;
+  overflow: hidden;
+  order: 1;
+  justify-content: center;
+  align-items: center;  
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  max-width: 600px;    
+
+  @media (min-width: 768px) {
+    display: flex;    
+  }
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  overflow: hidden;
+  order: 1;
+  display: flex;
+  height: 200px;
+  margin: 0 25px;
+  
+  @media (min-width: 768px) {
+    display: none;    
+  }
+`;
+
 const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 50px;
   max-width: 175px;
-  margin: 100px auto 80px auto;
+  margin: 20px auto;
+
   @media (min-width: 768px) {
-    margin: 100px 0 50px 80px;
+    display: none;    
   }
 `;
 
-const TextContent = styled.div`
-  max-width: 500px;
+const LogoContainerDesktop = styled.div`
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 50px;
+  max-width: 175px;
+  margin: 100px 0 50px 80px;
+
+  @media (min-width: 768px) {
+    display: flex;    
+  }
+`;
+
+const TextContent = styled.div`  
   margin: 0 25px 25px;
   @media (min-width: 768px) {
     margin: 0 0 100px 80px;
+    max-width: 500px;
   }
 `;
 
@@ -199,27 +243,16 @@ const SaleUnderButtons = styled.div`
   }
 `;
 
-const ImageContainer = styled.div`
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  order: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;  
-  max-width: 600px;
-
-`;
-
 const Features = styled.div`
   display: flex;
   justify-content: center;
   gap: 32px;
-  margin: 80px;
+  margin: 40px;
   background: white;
   
   @media (min-width: 768px) {
-    gap: 64px;    
+    gap: 64px;
+    margin: 80px;
   }
 `;
 
@@ -260,15 +293,13 @@ const Landing = () => {
     <>
       <MainContentBack>
         <MainContent>
+          <LogoContainer>
+            <Logo />
+          </LogoContainer>
           <ContentSection>
-            <LogoContainer>
-              <Image
-                src={SuniflowLogo}
-                alt="Suniflow Logo"
-                style={{ maxWidth: '100%', height: 'auto' }} 
-              />
-            </LogoContainer>
-
+            <LogoContainerDesktop>
+              <Logo />
+            </LogoContainerDesktop>
             <TextContent>
               <MainHeading>
                 Emotional cravings or mood swings?
@@ -298,11 +329,18 @@ const Landing = () => {
             </TextContent>
           </ContentSection>
 
+          <ImageContainerDesktop>
+            <Image
+              src={HeroImageDesktop}
+              alt="Happy customers"
+              style={{ position: 'absolute', maxWidth: '100%', height: 'auto', top: 0 }} 
+            />
+          </ImageContainerDesktop>
           <ImageContainer>
             <Image
               src={HeroImage}
               alt="Happy customers"
-              style={{ position: 'absolute', maxWidth: '100%', height: 'auto', top: 0 }} 
+              style={{ height: 'auto', objectFit: 'cover' }} 
             />
           </ImageContainer>
         </MainContent>

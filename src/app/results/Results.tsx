@@ -6,27 +6,25 @@ import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/app/context/QuizContext';
 import Logo from '../components/Logo';
+import Image from 'next/image';
+import Chart from '../assets/chart.webp';
+import BackgroundImage from '../assets/BG yellow.webp';
 
 
-const StaticSVGChart = styled.svg`
-  width: 100%;
-  height: 100px;
-  overflow: visible;
-  margin-top: 10px;
-`;
-
-const ChartContainer = styled.div`
-  position: relative;
-  height: 110px;
+const ChartContainer = styled.div`  
   margin: 0 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
-const ResultsContainer = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fff4e6 0%, #ffffff 60%);
+const ResultsWrapper = styled.div`
+  min-height: 100vh;  
   padding: 16px;
   
   @media (min-width: 768px) {
@@ -45,8 +43,8 @@ const HeaderSection = styled.div`
 `;
 
 const SeeProductButton = styled.button`
-  background: #ffd700;
-  color: #1a237e;
+  background: #FFCF00;
+  color: #00095C;
   border: none;
   padding: 12px 24px;
   border-radius: 25px;
@@ -56,34 +54,57 @@ const SeeProductButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background: #ffed4e;
-    transform: translateY(-1px);
+    background: #FFAA2B;
+    transform: translateY(-2px);
   }
 `;
 
-const MainContent = styled.div`
+const ResultsContainer = styled.div`
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+`;
+
+const MainContent = styled.div`
+  position: relative;
+  width: 100%;
+  margin: 0 auto 32px;
+  padding: 24px;
   display: grid;
   gap: 32px;
-  
+  z-index: 5;
+
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
+
+  &:before {
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('${BackgroundImage.src}');
+    background-size: cover;
+    opacity: 0.2;
+    z-index: -1;
+    border-radius: 24px;    
+  }
 `;
 
 const IntroSection = styled.div`
-  margin: auto;
-  @media (max-width: 767px) {
-    order: 2;
-  }
+  margin: auto;  
 `;
 
 const MainTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
-  color: #1a237e;
+  color: #00095C;
   line-height: 1.2;
   margin-bottom: 16px;
   
@@ -100,19 +121,15 @@ const Description = styled.p`
 `;
 
 const WeightEstimateCard = styled.div`
-  background: rgba(255, 255, 255, 0.8);
+  background: #fff;
   border-radius: 20px;
-  padding: 24px;
-  
-  @media (max-width: 767px) {
-    order: 1;
-  }
+  padding: 24px;  
 `;
 
 const ChartTitle = styled.h3`
   font-size: 20px;
   font-weight: bold;
-  color: #1a237e;
+  color: #00095C;
   text-align: center;
   margin-bottom: 24px;
 `;
@@ -130,14 +147,14 @@ const WeightPoint = styled.div`
 
 const WeightLabel = styled.div`
   font-size: 12px;
-  color: #9cb4d8;
+  color: #A8B0F8;
   margin-bottom: 8px;
 `;
 
 const WeightValue = styled.div`
   font-size: 24px;
   font-weight: bold;
-  color: #1a237e;
+  color: #00095C;
 `;
 
 const Arrow = styled.div`
@@ -147,6 +164,8 @@ const Arrow = styled.div`
 `;
 
 const SummarySection = styled.div`
+  margin-bottom: 32px;
+
   @media (min-width: 768px) {
     grid-column: 1 / -1;
   }
@@ -155,7 +174,7 @@ const SummarySection = styled.div`
 const SummaryTitle = styled.h2`
   font-size: 28px;
   font-weight: bold;
-  color: #1a237e;
+  color: #00095C;
   text-align: center;
   margin-bottom: 32px;
 `;
@@ -172,8 +191,8 @@ const SummaryGrid = styled.div`
 `;
 
 const BMICard = styled.div`
-  background: #1a237e;
-  color: white;
+  background: #00095C;
+  color: #fff;
   border-radius: 20px;
   padding: 24px;
   
@@ -183,8 +202,8 @@ const BMICard = styled.div`
 `;
 
 const InfoCard = styled.div`
-  background: #1a237e;
-  color: white;
+  background: #00095C;
+  color: #fff;
   border-radius: 20px;
   padding: 24px;
   text-align: center;
@@ -194,7 +213,6 @@ const CardLabel = styled.div`
   font-size: 12px;
   font-weight: bold;
   margin-bottom: 12px;
-  opacity: 0.8;
 `;
 
 const BMIValue = styled.div`
@@ -211,9 +229,9 @@ const CardValue = styled.div`
 
 const BMIBar = styled.div`
   position: relative;
-  height: 8px;
-  background: linear-gradient(to right, #4caf50 0%, #4caf50 33%, #ff9800 33%, #ff9800 66%, #f44336 66%);
-  border-radius: 4px;
+  height: 40px;
+  background: linear-gradient(to right, #4BD4A9 0%, #4BD4A9 33%, #EF809B 33%, #EF809B 66%, #E32855 66%);
+  border-radius: 50px;
   margin-bottom: 12px;
 `;
 
@@ -229,17 +247,17 @@ const BMIMarker = styled.div<{ $position: number }>`
   top: 50%;
   left: ${props => props.$position}%;
   transform: translate(-50%, -50%);
-  width: 4px;
-  height: 16px;
+  width: 8px;
+  height: 48px;
   background: white;
-  border-radius: 2px;
+  border-radius: 50px;
+  border: 2px solid #00095C;
 `;
 
 const BMILabels = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  opacity: 0.8;
+  font-size: 14px;
 `;
 
 const Results = () => {
@@ -300,7 +318,7 @@ const Results = () => {
   }, [quiz]);
 
   return (
-    <ResultsContainer>      
+    <ResultsWrapper>      
       <HeaderSection>
         <Logo />
         <SeeProductButton onClick={() => router.push('/')}>
@@ -308,83 +326,38 @@ const Results = () => {
         </SeeProductButton>
       </HeaderSection>
 
-      <MainContent>
-        <IntroSection>
-          <MainTitle>See how Suniflow can improve your life</MainTitle>
-          <Description>
-            Experience better overall health. Discover how Suniflow can assist you in your personal journey below.
-          </Description>
-        </IntroSection>
+      <ResultsContainer>
+        <MainContent>
+          <IntroSection>
+            <MainTitle>See how Suniflow can improve your life</MainTitle>
+            <Description>
+              Experience better overall health. Discover how Suniflow can assist you in your personal journey below.
+            </Description>
+          </IntroSection>
 
-        <WeightEstimateCard>
-          <ChartTitle>Weight estimate</ChartTitle>
-          <WeightComparison>
-            <WeightPoint>
-              <WeightLabel>FEB 2025</WeightLabel>
-              <WeightValue>79 kg</WeightValue>
-            </WeightPoint>
-            <Arrow>→</Arrow>
-            <WeightPoint>
-              <WeightLabel>SEP 2025</WeightLabel>
-              <WeightValue>69 kg</WeightValue>
-            </WeightPoint>
-          </WeightComparison>
+          <WeightEstimateCard>
+            <ChartTitle>Weight estimate</ChartTitle>
+            <WeightComparison>
+              <WeightPoint>
+                <WeightLabel>FEB 2025</WeightLabel>
+                <WeightValue>
+                  {`${calculations.displayWeight || '—'} ${calculations.weightUnit}`}
+                </WeightValue>
+              </WeightPoint>
+              <Arrow>→</Arrow>
+              <WeightPoint>
+                <WeightLabel>SEP 2025</WeightLabel>
+                <WeightValue>
+                  {`${calculations.displayDesiredWeight || '—'} ${calculations.weightUnit}`}
+                </WeightValue>
+              </WeightPoint>
+            </WeightComparison>
 
-          <ChartContainer>
-            <StaticSVGChart viewBox="">
-              <defs>
-                <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(138, 43, 226, 0.4)" />
-                  <stop offset="100%" stopColor="rgba(138, 43, 226, 0.05)" />
-                </linearGradient>
-              </defs>
-
-              <path
-                d="M 30 25 Q 90 35, 150 50 Q 210 65, 270 75"
-                fill="none"
-                stroke="#8A2BE2"
-                strokeWidth="2"
-              />
-             
-              <path
-                d="M 30 25 Q 90 35, 150 50 Q 210 65, 270 75 L 270 85 L 30 85 Z"
-                fill="url(#chartGradient)"
-              />
-
-              <g>
-                <circle cx="30" cy="25" r="4" fill="white" stroke="#1a237e" strokeWidth="2" />
-                <text x="30" y="15" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#1a237e">
-                  -4 kg
-                </text>
-              </g>
-
-              <g>
-                <circle cx="90" cy="35" r="4" fill="white" stroke="#1a237e" strokeWidth="2" />
-                <text x="90" y="25" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#1a237e">
-                  -3 kg
-                </text>
-              </g>
-
-              <g>
-                <circle cx="150" cy="50" r="4" fill="white" stroke="#1a237e" strokeWidth="2" />
-                <text x="150" y="40" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#1a237e">
-                  -2 kg
-                </text>
-              </g>
-
-              <g>
-                <circle cx="210" cy="65" r="4" fill="white" stroke="#1a237e" strokeWidth="2" />
-                <text x="210" y="55" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#1a237e">
-                  -2 kg
-                </text>
-              </g>
-
-              <g>
-                <circle cx="270" cy="75" r="4" fill="white" stroke="#1a237e" strokeWidth="2" />
-              </g>
-            </StaticSVGChart>
-          </ChartContainer>
-        </WeightEstimateCard>
+            <ChartContainer>
+              <Image src={Chart} alt="Graph" />
+            </ChartContainer>
+          </WeightEstimateCard>
+        </MainContent>
 
         <SummarySection>
           <SummaryTitle>Your personal summary</SummaryTitle>
@@ -415,7 +388,7 @@ const Results = () => {
             </InfoCard>
 
             <InfoCard>
-              <CardLabel>HEIGHT {calculations.heightUnit}</CardLabel>
+              <CardLabel>HEIGHT {calculations.heightUnit.toUpperCase()}</CardLabel>
               <CardValue>{calculations.heightDisplay}</CardValue>
             </InfoCard>
 
@@ -425,8 +398,8 @@ const Results = () => {
             </InfoCard>
           </SummaryGrid>
         </SummarySection>
-      </MainContent>
-    </ResultsContainer>
+      </ResultsContainer>
+    </ResultsWrapper>
   );
 };
 

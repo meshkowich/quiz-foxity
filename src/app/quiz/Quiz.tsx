@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/app/context/QuizContext';
 import BackgroundImage from '../assets/BG yellow.webp';
 import Logo from '../components/Logo';
+import BlurredGraph from '../assets/blurredGraph.webp';
+import Image from 'next/image';
 
 const QuizWrapper = styled.div`
   position: relative;
@@ -13,7 +15,7 @@ const QuizWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px;
   
   &:before {
     content:'';
@@ -37,9 +39,9 @@ const QuizContainer = styled.div`
   text-align: center;
 `;
 
-const QuizHeader = styled.div`
+const QuizHeader = styled.div<{ $centerJustify: boolean }>`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${props => props.$centerJustify ? 'center' : 'space-between'};
   align-items: center;
   margin-bottom: 50px;
 `;
@@ -80,7 +82,7 @@ const OptionsContainer = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
 `;
 
 const MoodOption = styled.button<{ $selected: boolean }>`
@@ -92,7 +94,7 @@ const MoodOption = styled.button<{ $selected: boolean }>`
   border: 2px solid ${props => props.$selected ? '#1a237e' : 'transparent'};
   border-radius: 50px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: #1a237e;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -113,7 +115,7 @@ const SymptomsContainer = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
 `;
 
 const SymptomOption = styled.button<{ $selected: boolean }>`
@@ -125,7 +127,7 @@ const SymptomOption = styled.button<{ $selected: boolean }>`
   border: 2px solid ${props => props.$selected ? '#1a237e' : 'rgba(26,35,126,0.2)'};
   border-radius: 50px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: #1a237e;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -153,27 +155,37 @@ const Checkbox = styled.div<{ $checked: boolean }>`
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 2px;
-  background: rgba(255,255,255,0.5);
+  gap: 25px;  
   border-radius: 8px;
   padding: 4px;
+  width: 100%;
+  max-width: 400px;
+  justify-content: space-between;
+  
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
   padding: 12px 32px;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  border-bottom: 2px solid;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
+  background: transparent;
+  width: 100%;
+
+  &:hover {
+    color: #333A7D;
+    border-color: #333A7D;
+  }
   
-  ${props => props.$active ? `
-    background: #1a237e;
-    color: white;
-  ` : `
-    background: transparent;
-    color: #1a237e;
+  ${props => props.$active ? `    
+    color: #00095C;
+    border-color: #00095C;
+  ` : `    
+    color: #A8B0F8;
+    border-color: #A8B0F8;
   `}
 `;
 
@@ -214,6 +226,10 @@ const Input = styled.input`
   }
 `;
 
+const ShorterInput = styled(Input)`
+    width: 100%;
+`;
+
 const Unit = styled.span`
   color: #1a237e;
   font-weight: 500;
@@ -221,8 +237,10 @@ const Unit = styled.span`
 `;
 
 const ContinueButton = styled.button`
-  background: #ffd700;
-  color: #1a237e;
+  background: #FFCF00;
+  color: #00095C;
+  width: 100%;
+  max-width: 400px;
   border: none;
   padding: 16px 48px;
   border-radius: 25px;
@@ -232,7 +250,7 @@ const ContinueButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background: #ffed4e;
+    background: #FFAA2B;
     transform: translateY(-2px);
   }
 `;
@@ -288,10 +306,7 @@ const Quiz = () => {
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
-        body: JSON.stringify({
-          mood: 'just wow 1',
-          symptoms: 'idk',
-        }),
+        body: JSON.stringify(quiz),
       });
       const result = await response.json();
       if (!result.ok) {
@@ -345,7 +360,7 @@ const Quiz = () => {
   return (
     <QuizWrapper>
       <QuizContainer>
-        <QuizHeader>
+        <QuizHeader $centerJustify={currentStep === 4}>
           <Logo />
           {currentStep !== 4 && (
             <StepIndicator>
@@ -427,7 +442,7 @@ const Quiz = () => {
                 {quiz.measurementUnit === 'imperial' ? (
                   <FormRow>
                     <FormField>
-                      <Input 
+                      <ShorterInput 
                         type="number" 
                         placeholder="Height"
                         value={quiz.heightFeet || ''}
@@ -436,7 +451,7 @@ const Quiz = () => {
                       <Unit>ft</Unit>
                     </FormField>
                     <FormField>
-                      <Input 
+                      <ShorterInput 
                         type="number" 
                         placeholder="In"
                         value={quiz.heightInches || ''}
@@ -488,6 +503,7 @@ const Quiz = () => {
 
           {currentStep === 4 && (
             <StepContent>
+              <Image src={BlurredGraph} alt="Graph" />
               <StepTitle>Enter your e-mail</StepTitle>
               <FormContainer>
                 <FormRow>
