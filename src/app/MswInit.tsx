@@ -9,11 +9,12 @@ const MswInit = () => {
 
     if (!enable) return;
 
-    // Dynamic import to avoid bundling in prod builds when not used
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
     import('@/mock/browser')
       .then(({ worker }) => worker.start({
         serviceWorker: {
-          url: '/mockServiceWorker.js', // default path; can be customized
+          url: `${basePath}/mockServiceWorker.js`,
         },
         onUnhandledRequest: 'bypass', // or 'warn' during debugging
       }))
