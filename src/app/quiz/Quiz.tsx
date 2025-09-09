@@ -336,7 +336,7 @@ const Quiz = () => {
     }
   };
 
-  const handleMoodSelect = (mood: any) => {
+  const handleMoodSelect = (mood: MoodValue) => {
     setMood(mood);
     setTimeout(nextStep, 300); // Auto-advance after selection
   };
@@ -349,7 +349,19 @@ const Quiz = () => {
     'None'
   ];
 
-  const moodOptions = [
+  type MoodValue =
+  | 'not-great'
+  | 'could-be-improved'
+  | 'doing-okay'
+  | 'feeling-good'
+  | 'absolutely-fantastic';
+
+  type MoodOption = {
+    value: MoodValue;
+    label: string;
+  };
+
+  const moodOptions: readonly MoodOption[] = [
     { value: 'not-great', label: 'Not great at all' },
     { value: 'could-be-improved', label: 'Could be improved' },
     { value: 'doing-okay', label: 'Doing okay' },
@@ -376,7 +388,7 @@ const Quiz = () => {
                 {moodOptions.map((option) => (
                   <MoodOption
                     key={option.value}
-                    onClick={() => handleMoodSelect(option.value as any)}
+                    onClick={() => handleMoodSelect(option.value as MoodValue)}
                     $selected={quiz.mood === option.value}
                   >
                     <span>{option.label}</span>

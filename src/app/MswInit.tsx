@@ -18,7 +18,6 @@ const MswInit = () => {
         onUnhandledRequest: 'bypass', // or 'warn' during debugging
       }))
       .catch((err) => {
-        // eslint-disable-next-line no-console
         console.warn('MSW failed to start', err);
       });
   }, []);
